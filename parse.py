@@ -41,6 +41,8 @@ class Parser(object):
 
         --------------- n년 n월 n일 n요일 ---------------
         [이름] [오전 n시] 내용
+        
+        시간 | 사용자 | 내용 순으로 파실
     """
     def _parse_windows(self, filepath):
         with open(filepath, 'r', encoding="utf-8") as f:
@@ -50,15 +52,26 @@ class Parser(object):
         while first_line[0] != "[":
             df = df[1:].reset_index(drop=True)
 
+        if self.include_filepath:
+            paths = []
+        times, names, messages = [], [], []
+        for i, row in df.iterrows():
+            matches = re.findall("\[.+?\]", row)
+            times.append(matches[1][1, -1])
+            names.append(matches[0][1, -1])
+
+
+
+
+        return df
+
     r"""
         맥 줄패턴: 
-        read_csv
-
         년-월-일 시:분:초, "이름", "메세지"
     """
     def _parse_mac(self, filepath):
         df = pd.read_csv(filepath)
-        # TODO: strip uneccesary lines
+
         return df
 
     r"""
@@ -87,4 +100,5 @@ class Parser(object):
             삭제된 메시지입니다.
             This message was deleted.
     """
-    def _postprocess(self):
+    def _postprocess(self):  # TODO: strip unnecessary lines
+        pass
